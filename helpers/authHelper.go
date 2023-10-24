@@ -20,12 +20,13 @@ func CheckUserType(c *gin.Context, role string) (err error) {
 		log.Fatal("Error while trying to acquire conn from pool!")
 		return
 	}
-	query := `SELECT name FROM usertypes WHERE id = (SELECT id FROM users WHERE id = $1)`
+	query := `SELECT DISTINCT(name) FROM usertypes where id = $1`
 	row := conn.QueryRow(ctx, query, userTypeID)
 	var userTypeString string
 	err1 := row.Scan(&userTypeString)
 
 	if err1 != nil {
+		log.Println(err1)
 		log.Fatal("There is no particular role in our DB")
 		return
 	}

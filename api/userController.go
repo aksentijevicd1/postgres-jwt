@@ -100,7 +100,7 @@ func (server *Server) Signup() gin.HandlerFunc {
 			return
 
 		} else {
-			fmt.Println("Error je nil tako da trebalo bi da radi iako ne pise tako u dokumentaciji")
+			//uspesno
 		}
 
 		count = 0
@@ -114,7 +114,7 @@ func (server *Server) Signup() gin.HandlerFunc {
 			return
 
 		} else {
-			fmt.Println("Error je nil tako da trebalo bi da radi iako ne pise tako u dokumentaciji")
+			// uspesno!
 		}
 
 		password := HashPassword(user.Password)
@@ -126,7 +126,7 @@ func (server *Server) Signup() gin.HandlerFunc {
 		user.Token = token
 		user.RefreshToken = refreshToken
 
-		userFinal, errCreatingUser := server.production.CreateUser(ctx, sqlcdb.CreateUserParams{
+		_, errCreatingUser := server.production.CreateUser(ctx, sqlcdb.CreateUserParams{
 			Firstname:    user.Firstname,
 			Lastname:     user.Lastname,
 			Password:     user.Password,
@@ -142,8 +142,7 @@ func (server *Server) Signup() gin.HandlerFunc {
 			return
 		}
 		defer cancel()
-		c.JSON(http.StatusOK, userFinal)
-
+		c.JSON(http.StatusOK, gin.H{"success": "You have successfully created user."})
 	}
 
 }
@@ -249,12 +248,12 @@ func (server *Server) GetUsers() gin.HandlerFunc {
 		}
 
 		startIndex = (page - 1) * recordPerPage
-		arg := sqlcdb.ListTasksParams{
+		arg := sqlcdb.ListUsersParams{
 			Limit:  int32(recordPerPage),
 			Offset: int32(startIndex),
 		}
 
-		users, err := server.production.ListTasks(ctx, arg)
+		users, err := server.production.ListUsers(ctx, arg)
 		defer cancel()
 
 		if err != nil {
